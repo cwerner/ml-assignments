@@ -110,17 +110,31 @@ def create_plot(X, mu, c, iteration=0):
 	# cluster colors
 	Dcol = {0: 'red', 1: 'blue', 2: 'green', 3: 'purple', 4: 'cyan'} 
 
-    # optional plot of entropy progress
-	fig = plt.figure()
-	ax = fig.add_subplot(111, projection='3d')
+	if d >= 3:
+		if d>3:
+			print('Using only first 3 dimensions for plotting...')
+		fig = plt.figure()
+		ax = fig.add_subplot(111, projection='3d')
 
-	if iteration == 0:
-		ax.scatter(X[:,0], X[:, 1], X[:,2], c='black', s=5, alpha=.5)	
+		if iteration == 0:
+			ax.scatter(X[:,0], X[:, 1], X[:,2], c='black', s=5, alpha=.5)	
+		else:
+			ax.scatter(X[:,0], X[:, 1], X[:,2], c=[Dcol[_] for _ in c], marker='+', s=5, alpha=.5)
+		ax.scatter(mu[:,0], mu[:, 1], mu[:,2], c=[Dcol[_] for _ in range(len(mu))], marker='P', s=25, alpha=1)
+		fig.savefig('kmeans_3d_%02d.pdf' % iteration)
+	elif d == 2:
+		fig = plt.figure()
+		ax = fig.add_subplot(111)
+
+		if iteration == 0:
+			ax.scatter(X[:,0], X[:, 1], c='black', s=5, alpha=.5)	
+		else:
+			ax.scatter(X[:,0], X[:, 1], c=[Dcol[_] for _ in c], marker='+', s=5, alpha=.5)
+		ax.scatter(mu[:,0], mu[:, 1], c=[Dcol[_] for _ in range(len(mu))], marker='P', s=25, alpha=1)
+		fig.savefig('kmeans_2d_%02d.pdf' % iteration)		
 	else:
-		ax.scatter(X[:,0], X[:, 1], X[:,2], c=[Dcol[_] for _ in c], marker='+', s=5, alpha=.5)
-	ax.scatter(mu[:,0], mu[:, 1], mu[:,2], c=[Dcol[_] for _ in range(len(mu))], marker='P', s=25, alpha=1)
-	fig.savefig('kmeans_3d_%02d.pdf' % iteration)
-
+		print('Only one dimension recognized. Abort.')
+		sys.exit()
 
 def random_init_centroids(X):
 	""" Take input and choose random centroids
@@ -170,10 +184,8 @@ def update_step(X_, c, mu):
 
 
 
-
 def KMeans(data):
 	# perform the algorithm with 5 clusters and 10 iterations...
-	# you may try others for testing purposes, but submit 5 and 10 respectively
 
 	# random initialization for start
 	mu = random_init_centroids(X)
@@ -198,15 +210,22 @@ def KMeans(data):
 
   
 def EMGMM(data):
+	#
+	# EM-GMM
 
-	filename = "pi-" + str(i+1) + ".csv" 
-	np.savetxt(filename, pi, delimiter=",") 
-	filename = "mu-" + str(i+1) + ".csv"
-	np.savetxt(filename, mu, delimiter=",")  #this must be done at every iteration
+
+	for i in range(iterations):
+
+
+		# data output
+		filename = "pi-" + str(i+1) + ".csv" 
+		np.savetxt(filename, pi, delimiter=",") 
+		filename = "mu-" + str(i+1) + ".csv"
+		np.savetxt(filename, mu, delimiter=",")
     
-	for j in range(K): #k is the number of clusters 
-	    filename = "Sigma-" + str(j+1) + "-" + str(i+1) + ".csv" #this must be done 5 times (or the number of clusters) for each iteration
-	    np.savetxt(filename, sigma[j], delimiter=",")
+		for j in range(K): #k is the number of clusters 
+		    filename = "Sigma-" + str(j+1) + "-" + str(i+1) + ".csv" #this must be done 5 times (or the number of clusters) for each iteration
+		    np.savetxt(filename, sigma[j], delimiter=",")
 
 
 # PART 1 : K-Means
