@@ -33,7 +33,7 @@
 import numpy as np
 import sys
 
-PLOT = True
+PLOT = False
 if PLOT:
     import matplotlib.pyplot as plt
 
@@ -149,5 +149,8 @@ def part2(X, X_test, lmbda, sigma2_input):
 active = part2(X_train, X_test, lambda_input, sigma2_input)  # Assuming active is returned from the function
 if len(active) > 10:
     active = active[:10]
-active = np.array(active).reshape((1, len(active)))
+
+# increase the indices by 1
+active = np.array(active).reshape((1, len(active))) + 1
+print(active)
 np.savetxt("active_" + str(lambda_input) + "_" + str(int(sigma2_input)) + ".csv", active, fmt='%d', delimiter=",")
