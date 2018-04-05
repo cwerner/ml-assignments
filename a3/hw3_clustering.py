@@ -126,6 +126,7 @@ def create_plot(X, mu, c, iteration=0):
 		fig = plt.figure()
 		ax = fig.add_subplot(111)
 
+		# inital color for datapoints: black
 		if iteration == 0:
 			ax.scatter(X[:,0], X[:, 1], c='black', s=5, alpha=.5)	
 		else:
@@ -149,7 +150,7 @@ def random_init_centroids(X):
 	return np.array(mu)
 
 # coordinate descent
-def assignment_step(X_, mu):
+def kmeans_assignment_step(X_, mu):
 	""" K-Means assigment step
 	"""
 
@@ -166,7 +167,7 @@ def assignment_step(X_, mu):
 		c[ix] = np.argmin(distances)
 	return c 
 
-def update_step(X_, c, mu):
+def kmeans_update_step(X_, c, mu):
 	""" Update centroids
 	""" 
 
@@ -196,7 +197,7 @@ def KMeans(data):
 	# k-means run (1...10)
 	for i in range(iterations):
 		# step a - assign to closest centroid
-		c = assignment_step(X, mu)	
+		c = kmeans_assignment_step(X, mu)	
 		
 		if PLOT: create_plot(X, mu, c, iteration=i+1)
 
@@ -204,7 +205,7 @@ def KMeans(data):
 		np.savetxt(filename, mu, delimiter=",")
 
 		# TODO: Check if we need to move this upwards to get full score
-		mu = update_step(X, c, mu)
+		mu = kmeans_update_step(X, c, mu)
 
 
 
