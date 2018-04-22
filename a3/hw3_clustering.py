@@ -65,11 +65,10 @@ def KMeans(X):
         # write state --------------------
         filename = "centroids-" + str(it+1) + ".csv" #"i" would be each iteration
         np.savetxt(filename, centroids, delimiter=",")
-    return centroids
-  
+    return (centroids, Ci, Ni)
 
 
-def EMGMM(X, kmeans_centroids):
+def EMGMM(X, kmeans_centroids, Ci, Ni):
 
     phi = np.zeros((N, K))
     pi  = np.zeros(K)
@@ -81,28 +80,51 @@ def EMGMM(X, kmeans_centroids):
 
     k = 0
 
-    Ci = np.zeros(N, dtype='int')
-    Ni = np.zeros(K)
+    #Ci = np.zeros(N, dtype='int')
+    #Ni = np.zeros(K)
 
     # init centroids (with kmeans centroids)
     centroids = kmeans_centroids
 
+    # new attempt
+
     for n in range(N):
-
-        y = Ci[n]
-        X_to_c = X[n] - centroids[k]
-        X_to_c = X_to_c[np.newaxis]
-        print(X_to_c)
+        y = int(Ci[n][0])
         print(y)
+        X_to_c = X[n] - centroids[k]
+        X_to_c = X_to_c[np.newaxis]       
         sigmas[y] += np.dot(X_to_c.T, X_to_c)
-
+    
     for k in range(K):
         sigmas[k] /= Ni[k]
+
+
+
+    #for k in range(K):
+    #    #sigmas[k] /= Ni[k]
+
+    #    sigma = np.zeros((d,d))
+
+    #    for n in range(N):
+
+    #        X_to_c = (X[n] - centroids[k])[np.newaxis]
+
+    #        sigma_N = np.dot(X_to_c.T, X_to_c)
+    #        sigma_N *= phi[n, k]
+
+    #        sigma += sigma_N
+        
+    #    sigma /= (pi[k] * N)
+    #sigmas[k] = sigma
+
+    print(sigmas)
+    print(centroids)
 
     # maybe we are missing something here !!!
 
 
     for it in range(iterations):
+        print("iteration %d ..." % it)
 
         # expectation step,
         # update phi and pi
@@ -143,14 +165,16 @@ def EMGMM(X, kmeans_centroids):
         for k in range(K):
             sigma = np.zeros((d,d))
 
-            X_to_c = (X[n] - centroids[k])[np.newaxis]
+            for n in range(N):
 
-            sigma_N = np.dot(X_to_c.T, X_to_c)
-            sigma_N *= phi[n, k]
+                X_to_c = (X[n] - centroids[k])[np.newaxis]
 
-            sigma += sigma_N
+                sigma_N = np.dot(X_to_c.T, X_to_c)
+                sigma_N *= phi[n, k]
+
+                sigma += sigma_N
         
-        sigma /= (pi[k] * N)
+            sigma /= (pi[k] * N)
         sigmas[k] = sigma
 
 
@@ -166,6 +190,6 @@ def EMGMM(X, kmeans_centroids):
 
 # perform the calculations
 
-centroids = KMeans(X)
+centroids, Ci, Ni = KMeans(X)
 
-EMGMM(X, centroids)
+EMGMM(X, centroids, Ci, Ni)
