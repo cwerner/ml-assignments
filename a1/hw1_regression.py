@@ -87,15 +87,20 @@ def calc_sigma0s(sigma_prior, X_test, values):
 def calc_posterior(sigma_prior, row):
     """ Calclate Posterior
     """
-    sigma_post = np.linalg.inv((1.0/sigma2_input * row) * row.T + np.linalg.inv(sigma_prior))
-    return sigma_post
+    return np.linalg.inv(
+        (1.0 / sigma2_input * row) * row.T + np.linalg.inv(sigma_prior)
+    )
 
 
 def calc_entropy(H_prior, row, sigma_prior):
     """ Calculate Entropy
     """
-    H_post = H_prior - np.log(1 + 1/sigma2_input * np.dot(np.dot(row.T, sigma_prior), row)) * d * 0.5
-    return H_post
+    return (
+        H_prior
+        - np.log(1 + 1 / sigma2_input * np.dot(np.dot(row.T, sigma_prior), row))
+        * d
+        * 0.5
+    )
 
 
 def part2(X, X_test, lmbda, sigma2_input):
